@@ -59,15 +59,22 @@ MTRenderContext::MTRenderContext(
 
     #endif // /LLGL_OS_IOS
 
+    // Currently drawing happens outside of the usual MTKView
+    // drawing machinery so we have no use for it's internal
+    // timer.
+    [view_ setPaused: YES];
+
     /* Initialize color and depth buffer */
     //MTLPixelFormat colorFmt = metalLayer_.pixelFormat;
-
+    view_.autoResizeDrawable        = NO;
     view_.colorPixelFormat          = renderPass_.GetColorAttachments()[0].pixelFormat;
     view_.depthStencilPixelFormat   = renderPass_.GetDepthStencilFormat();
     view_.sampleCount               = renderPass_.GetSampleCount();
 
     if (desc.vsync.enabled)
         view_.preferredFramesPerSecond = static_cast<NSInteger>(desc.vsync.refreshRate);
+
+    OnSetVideoMode(desc.videoMode);
 }
 
 void MTRenderContext::Present()
@@ -102,7 +109,20 @@ const RenderPass* MTRenderContext::GetRenderPass() const
 
 bool MTRenderContext::OnSetVideoMode(const VideoModeDescriptor& videoModeDesc)
 {
-    return true; // do nothing
+    CGFloat scale = videoModeDesc.resolution.width / view_.bounds.size.width;
+    if (scale != view_.layer.contentsScale)
+        view_.layer.contentsScale = scale;
+
+    CGSize drawableSize;
+    drawableSize.width = videoModeDesc.resolution.width;
+    drawableSize.height = videoModeDesc.resolution.height;
+    if (!CGSizeEqualToSize(drawableSize, view_.drawableSize))
+        view_.drawableSize = drawableSize;
+
+    // Force the view to advance to the next drawable
+    [view_ draw];
+
+    return true;
 }
 
 bool MTRenderContext::OnSetVsync(const VsyncDescriptor& vsyncDesc)

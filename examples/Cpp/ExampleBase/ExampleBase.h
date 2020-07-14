@@ -170,7 +170,7 @@ protected:
 
     ExampleBase(
         const std::wstring&     title,
-        const LLGL::Extent2D&   resolution  = { 800, 600 },
+        const LLGL::Extent2D&   windowSize  = { 800, 600 },
         std::uint32_t           samples     = 8,
         bool                    vsync       = true,
         bool                    debugger    = true
@@ -180,7 +180,7 @@ protected:
     virtual void OnDrawFrame() = 0;
 
     // Callback when the window has been resized. Can also be detected by using a custom window event listener.
-    virtual void OnResize(const LLGL::Extent2D& resoluion);
+    virtual void OnResize(const LLGL::Extent2D& windowSize);
 
 protected:
 

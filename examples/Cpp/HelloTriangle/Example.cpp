@@ -28,16 +28,26 @@ int main(int argc, char* argv[])
         // Load render system module
         std::unique_ptr<LLGL::RenderSystem> renderer = LLGL::RenderSystem::Load(rendererModule);
 
+        // Create the window
+        std::shared_ptr<LLGL::Surface> surface;
+        LLGL::WindowDescriptor windowDesc;
+        {
+            windowDesc.size             = { 800, 600 };
+            windowDesc.borderless       = false;
+            windowDesc.centered         = true;
+        }
+        surface = LLGL::Window::Create(windowDesc);
+
         // Create render context
         LLGL::RenderContextDescriptor contextDesc;
         {
-            contextDesc.videoMode.resolution    = { 800, 600 };
+            contextDesc.videoMode.resolution    = surface->GetPreferredResolution();
             contextDesc.vsync.enabled           = true;
             #ifdef ENABLE_MULTISAMPLING
             contextDesc.samples                 = 8; // check if LLGL adapts sample count that is too high
             #endif
         }
-        LLGL::RenderContext* context = renderer->CreateRenderContext(contextDesc);
+        LLGL::RenderContext* context = renderer->CreateRenderContext(contextDesc, surface);
 
         // Print renderer information
         const auto& info = renderer->GetRendererInfo();

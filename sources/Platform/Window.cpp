@@ -113,27 +113,7 @@ bool Window::HasQuit() const
 
 bool Window::AdaptForVideoMode(VideoModeDescriptor& videoModeDesc)
 {
-    /* Query current window descriptor */
-    auto windowDesc = GetDesc();
-
-    /* Adapt window size and position */
-    windowDesc.size = videoModeDesc.resolution;
-
-    if (videoModeDesc.fullscreen)
-    {
-        windowDesc.borderless   = true;
-        windowDesc.position     = { 0, 0 };
-    }
-    else
-    {
-        windowDesc.borderless   = false;
-        windowDesc.centered     = true;
-    }
-
-    /* Set new window descriptor and return with success */
-    SetDesc(windowDesc);
-
-    return true;
+    return false;
 }
 
 bool Window::ProcessEvents()

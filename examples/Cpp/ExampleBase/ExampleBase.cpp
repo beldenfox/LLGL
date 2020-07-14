@@ -153,7 +153,7 @@ void ExampleBase::ResizeEventHandler::OnResize(LLGL::Window& sender, const LLGL:
         // Update video mode
         auto videoMode = context_->GetVideoMode();
         {
-            videoMode.resolution = clientAreaSize;
+            videoMode.resolution = sender.GetPreferredResolution();
         }
         context_->SetVideoMode(videoMode);
 
@@ -251,7 +251,7 @@ void ExampleBase::Run()
 
 ExampleBase::ExampleBase(
     const std::wstring&     title,
-    const LLGL::Extent2D&   resolution,
+    const LLGL::Extent2D&   windowSize,
     std::uint32_t           samples,
     bool                    vsync,
     bool                    debugger)
@@ -293,14 +293,39 @@ ExampleBase::ExampleBase(
     if (!debugger)
         debuggerObj_.reset();
 
+    // Create a surface
+    std::shared_ptr<LLGL::Surface> surface;
+
+    #ifdef LLGL_MOBILE_PLATFORM
+
+    /* Create new canvas for this render context */
+    LLGL::CanvasDescriptor canvasDesc;
+    {
+        canvasDesc.borderless = videoModeDesc.fullscreen;
+    }
+    surface = LLGL::Canvas::Create(canvasDesc);
+
+    #else
+
+    /* Create new window for this render context */
+    LLGL::WindowDescriptor windowDesc;
+    {
+        windowDesc.size             = windowSize;
+        windowDesc.borderless       = false;
+        windowDesc.centered         = true;
+    }
+    surface = LLGL::Window::Create(windowDesc);
+
+    #endif
+
     // Create render context
     LLGL::RenderContextDescriptor contextDesc;
     {
-        contextDesc.videoMode.resolution    = resolution;
+        contextDesc.videoMode.resolution    = surface->GetPreferredResolution();
         contextDesc.vsync.enabled           = vsync;
         contextDesc.samples                 = samples;
     }
-    context = renderer->CreateRenderContext(contextDesc);
+    context = renderer->CreateRenderContext(contextDesc, surface);
 
     // Create command buffer
     commands = renderer->CreateCommandBuffer();

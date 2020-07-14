@@ -43,6 +43,7 @@ MacOSGLContext::MacOSGLContext(
     surface.GetNativeHandle(&nativeHandle, sizeof(nativeHandle));
 
     CreateNSGLContext(nativeHandle, sharedContext);
+    Resize(desc.videoMode.resolution);
 }
 
 MacOSGLContext::~MacOSGLContext()
@@ -68,6 +69,14 @@ bool MacOSGLContext::SwapBuffers()
 
 void MacOSGLContext::Resize(const Extent2D& resolution)
 {
+    #pragma clang diagnostic push
+    #pragma clang diagnostic ignored "-Wdeprecated-declarations"
+    if (resolution.width > wnd_.contentView.bounds.size.width)
+        wnd_.contentView.wantsBestResolutionOpenGLSurface = YES;
+    else
+        wnd_.contentView.wantsBestResolutionOpenGLSurface = NO;
+    #pragma clang diagnostic pop
+
     [ctx_ update];
 }
 

@@ -65,6 +65,12 @@ class LLGL_EXPORT Surface : public Interface
         virtual Extent2D GetContentSize() const = 0;
 
         /**
+        \brief Returns the preferred resolution for configuring the render context.
+        \remarks In systems which are not high-resolution aware this will be the same as the content size.
+        */
+        virtual Extent2D GetPreferredResolution() const;
+
+        /**
         \brief Adapts the surface to fits the needs for the specified video mode descriptor.
         \param[in,out] videoModeDesc Specifies the input and output video mode descriptor.
         \return If the video mode descriptor has been accepted with no modifications and this surface has been updated then the return value is true.
