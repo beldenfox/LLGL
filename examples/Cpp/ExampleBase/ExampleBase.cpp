@@ -139,10 +139,11 @@ ExampleBase::TutorialShaderDescriptor::TutorialShaderDescriptor(
  * ResizeEventHandler class
  */
 
-ExampleBase::ResizeEventHandler::ResizeEventHandler(ExampleBase& tutorial, LLGL::RenderContext* context, Gs::Matrix4f& projection) :
+ExampleBase::ResizeEventHandler::ResizeEventHandler(ExampleBase& tutorial, LLGL::RenderContext* context, Gs::Matrix4f& projection, bool highRes) :
     tutorial_   { tutorial   },
     context_    { context    },
-    projection_ { projection }
+    projection_ { projection },
+    useHighRes_ { highRes }
 {
 }
 
@@ -151,9 +152,13 @@ void ExampleBase::ResizeEventHandler::OnResize(LLGL::Window& sender, const LLGL:
     if (clientAreaSize.width >= 4 && clientAreaSize.height >= 4)
     {
         // Update video mode
+        LLGL::Extent2D resolution = sender.GetContentSize();
+        if (useHighRes_)
+            resolution = sender.GetPreferredResolution();
+           
         auto videoMode = context_->GetVideoMode();
         {
-            videoMode.resolution = sender.GetPreferredResolution();
+            videoMode.resolution = resolution;
         }
         context_->SetVideoMode(videoMode);
 
@@ -321,11 +326,19 @@ ExampleBase::ExampleBase(
     // Create render context
     LLGL::RenderContextDescriptor contextDesc;
     {
-        contextDesc.videoMode.resolution    = surface->GetPreferredResolution();
+        contextDesc.videoMode.resolution    = surface->GetContentSize();
         contextDesc.vsync.enabled           = vsync;
         contextDesc.samples                 = samples;
     }
     context = renderer->CreateRenderContext(contextDesc, surface);
+
+    bool useHighRes = renderer->GetRenderingCaps().features.hasHighResolution;
+    if (useHighRes)
+    {
+        LLGL::VideoModeDescriptor videoMode = context->GetVideoMode();
+        videoMode.resolution = surface->GetPreferredResolution();
+        context->SetVideoMode(videoMode);
+    }
 
     // Create command buffer
     commands = renderer->CreateCommandBuffer();
@@ -393,7 +406,7 @@ ExampleBase::ExampleBase(
     window.SetBehavior(behavior);
 
     // Add window resize listener
-    window.AddEventListener(std::make_shared<ResizeEventHandler>(*this, context, projection));
+    window.AddEventListener(std::make_shared<ResizeEventHandler>(*this, context, projection, useHighRes));
 
     // Show window
     window.Show();

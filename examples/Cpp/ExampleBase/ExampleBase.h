@@ -96,7 +96,7 @@ private:
 
         public:
 
-            ResizeEventHandler(ExampleBase& tutorial, LLGL::RenderContext* context, Gs::Matrix4f& projection);
+            ResizeEventHandler(ExampleBase& tutorial, LLGL::RenderContext* context, Gs::Matrix4f& projection, bool useHighRes);
 
             void OnResize(LLGL::Window& sender, const LLGL::Extent2D& clientAreaSize) override;
             void OnTimer(LLGL::Window& sender, std::uint32_t timerID) override;
@@ -106,6 +106,7 @@ private:
             ExampleBase&            tutorial_;
             LLGL::RenderContext*    context_;
             Gs::Matrix4f&           projection_;
+            bool                    useHighRes_;
 
     };
 
