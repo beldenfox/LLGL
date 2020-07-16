@@ -222,7 +222,7 @@ void D3D11RenderContext::ResizeBackBuffer(const VideoModeDescriptor& videoModeDe
     backBuffer_.dsv.Reset();
 
     /* Resize swap-chain buffers, let DXGI find out the client area, and preserve buffer count and format */
-    auto hr = swapChain_->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, 0);
+    auto hr = swapChain_->ResizeBuffers(0, videoModeDesc.resolution.width, videoModeDesc.resolution.height, DXGI_FORMAT_UNKNOWN, 0);
     DXThrowIfFailed(hr, "failed to resize DXGI swap-chain buffers");
 
     /* Recreate back buffer and reset default render target */
