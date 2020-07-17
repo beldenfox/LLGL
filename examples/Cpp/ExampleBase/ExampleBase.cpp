@@ -139,10 +139,11 @@ ExampleBase::TutorialShaderDescriptor::TutorialShaderDescriptor(
  * ResizeEventHandler class
  */
 
-ExampleBase::ResizeEventHandler::ResizeEventHandler(ExampleBase& tutorial, LLGL::RenderContext* context, Gs::Matrix4f& projection) :
+ExampleBase::ResizeEventHandler::ResizeEventHandler(ExampleBase& tutorial, LLGL::RenderContext* context, Gs::Matrix4f& projection, bool highRes) :
     tutorial_   { tutorial   },
     context_    { context    },
-    projection_ { projection }
+    projection_ { projection },
+    useHighRes_ { highRes }
 {
 }
 
@@ -151,9 +152,13 @@ void ExampleBase::ResizeEventHandler::OnResize(LLGL::Window& sender, const LLGL:
     if (clientAreaSize.width >= 4 && clientAreaSize.height >= 4)
     {
         // Update video mode
+        LLGL::Extent2D resolution = sender.GetContentSize();
+        if (useHighRes_)
+            resolution = sender.GetPreferredResolution();
+           
         auto videoMode = context_->GetVideoMode();
         {
-            videoMode.resolution = clientAreaSize;
+            videoMode.resolution = resolution;
         }
         context_->SetVideoMode(videoMode);
 
@@ -251,7 +256,7 @@ void ExampleBase::Run()
 
 ExampleBase::ExampleBase(
     const std::wstring&     title,
-    const LLGL::Extent2D&   resolution,
+    const LLGL::Extent2D&   windowSize,
     std::uint32_t           samples,
     bool                    vsync,
     bool                    debugger)
@@ -293,14 +298,47 @@ ExampleBase::ExampleBase(
     if (!debugger)
         debuggerObj_.reset();
 
+    // Create a surface
+    std::shared_ptr<LLGL::Surface> surface;
+
+    #ifdef LLGL_MOBILE_PLATFORM
+
+    /* Create new canvas for this render context */
+    LLGL::CanvasDescriptor canvasDesc;
+    {
+        canvasDesc.borderless = videoModeDesc.fullscreen;
+    }
+    surface = LLGL::Canvas::Create(canvasDesc);
+
+    #else
+
+    /* Create new window for this render context */
+    LLGL::WindowDescriptor windowDesc;
+    {
+        windowDesc.size             = windowSize;
+        windowDesc.borderless       = false;
+        windowDesc.centered         = true;
+    }
+    surface = LLGL::Window::Create(windowDesc);
+
+    #endif
+
     // Create render context
     LLGL::RenderContextDescriptor contextDesc;
     {
-        contextDesc.videoMode.resolution    = resolution;
+        contextDesc.videoMode.resolution    = surface->GetContentSize();
         contextDesc.vsync.enabled           = vsync;
         contextDesc.samples                 = samples;
     }
-    context = renderer->CreateRenderContext(contextDesc);
+    context = renderer->CreateRenderContext(contextDesc, surface);
+
+    bool useHighRes = renderer->GetRenderingCaps().features.hasHighResolution;
+    if (useHighRes)
+    {
+        LLGL::VideoModeDescriptor videoMode = context->GetVideoMode();
+        videoMode.resolution = surface->GetPreferredResolution();
+        context->SetVideoMode(videoMode);
+    }
 
     // Create command buffer
     commands = renderer->CreateCommandBuffer();
@@ -368,7 +406,7 @@ ExampleBase::ExampleBase(
     window.SetBehavior(behavior);
 
     // Add window resize listener
-    window.AddEventListener(std::make_shared<ResizeEventHandler>(*this, context, projection));
+    window.AddEventListener(std::make_shared<ResizeEventHandler>(*this, context, projection, useHighRes));
 
     // Show window
     window.Show();

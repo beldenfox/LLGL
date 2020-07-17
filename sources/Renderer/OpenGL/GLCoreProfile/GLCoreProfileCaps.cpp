@@ -205,6 +205,10 @@ static void GLGetSupportedFeatures(RenderingFeatures& features)
     features.hasLogicOp                     = true;
     features.hasPipelineStatistics          = HasExtension(GLExt::ARB_pipeline_statistics_query);
     features.hasRenderCondition             = true;
+
+    #if __APPLE__
+    features.hasHighResolution              = true;
+    #endif
 }
 
 static void GLGetFeatureLimits(const RenderingFeatures& features, RenderingLimits& limits)

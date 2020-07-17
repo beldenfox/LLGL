@@ -648,6 +648,7 @@ void D3D11RenderSystem::QueryRenderingCaps()
 
         caps.features.hasDirectResourceBinding      = true;
         caps.features.hasConservativeRasterization  = (minorVersion >= 3);
+        caps.features.hasHighResolution             = true;
 
         caps.limits.maxViewports                    = D3D11_VIEWPORT_AND_SCISSORRECT_OBJECT_COUNT_PER_PIPELINE;
         caps.limits.maxViewportSize[0]              = D3D11_VIEWPORT_BOUNDS_MAX;

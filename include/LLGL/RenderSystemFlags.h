@@ -554,6 +554,11 @@ struct RenderingFeatures
     \see CommandBuffer:BeginRenderCondition
     */
     bool hasRenderCondition             = false;
+
+    /**
+    \brief Specifies whether the video resolution can differ from the surface size.
+    */
+    bool hasHighResolution             = false;
 };
 
 /**

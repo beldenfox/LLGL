@@ -30,6 +30,8 @@ class MacOSWindow : public Window
 
         Extent2D GetContentSize() const override;
 
+        Extent2D GetPreferredResolution() const override;
+
         void SetPosition(const Offset2D& position) override;
         Offset2D GetPosition() const override;
 

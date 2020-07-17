@@ -144,7 +144,7 @@ static const auto g_EventTypeScrollWheel        = NSScrollWheel;
 - (void)windowDidResize:(NSNotification*)notification
 {
     //TODO: callback (here PostResize) must currently not be called while the NSEvent polling has not finished!
-    #if 0
+    #if 1
     /* Get size of the NSWindow's content view */
     NSWindow* sender = [notification object];
     NSRect frame = [[sender contentView] frame];
@@ -182,7 +182,7 @@ static const auto g_EventTypeScrollWheel        = NSScrollWheel;
 - (void)windowDidEnterFullScreen:(NSNotification*)notification
 {
     //TODO: callback (here PostResize) must currently not be called while the NSEvent polling has not finished!
-    #if 0
+    #if 1
     window_->PostResize(window_->GetSize());
     #else
     resizeSignaled_ = YES;
@@ -282,6 +282,19 @@ Extent2D MacOSWindow::GetContentSize() const
 {
     /* Return the size of the client area */
     return GetSize(true);
+}
+
+Extent2D MacOSWindow::GetPreferredResolution() const
+{
+    auto size = wnd_.contentView.bounds.size;
+    size.width *= wnd_.backingScaleFactor;
+    size.height *= wnd_.backingScaleFactor;
+
+    return Extent2D
+    {
+        static_cast<std::uint32_t>(size.width + 0.5),
+        static_cast<std::uint32_t>(size.height + 0.5)
+    };
 }
 
 void MacOSWindow::SetPosition(const Offset2D& position)
