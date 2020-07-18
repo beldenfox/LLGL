@@ -101,12 +101,13 @@ bool GLRenderContext::GLMakeCurrent(GLRenderContext* renderContext)
 
 bool GLRenderContext::OnSetVideoMode(const VideoModeDescriptor& videoModeDesc)
 {
+    /* Notify GL context of a resize. This may be rejected. */
+    if (!context_->Resize(videoModeDesc.resolution))
+        return false;
+
     /* Update context height */
     contextHeight_ = static_cast<GLint>(videoModeDesc.resolution.height);
     stateMngr_->NotifyRenderTargetHeight(contextHeight_);
-
-    /* Notify GL context of a resize */
-    context_->Resize(videoModeDesc.resolution);
 
     /* Switch fullscreen mode */
     if (!SetDisplayFullscreenMode(videoModeDesc))

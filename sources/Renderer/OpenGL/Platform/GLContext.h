@@ -32,7 +32,7 @@ class GLContext
         virtual bool SwapBuffers() = 0;
 
         // Resizes the GL context. This is called after the context surface has been resized.
-        virtual void Resize(const Extent2D& resolution) = 0;
+        virtual bool Resize(const Extent2D& resolution) = 0;
 
         // Returns the number of samples for this GL context. Must be in range [1, 64].
         virtual std::uint32_t GetSamples() const = 0;

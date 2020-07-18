@@ -113,7 +113,7 @@ void LoadFeatureSetCaps(id<MTLDevice> device, MTLFeatureSet fset, RenderingCapab
     features.hasConservativeRasterization   = false;
     features.hasStreamOutputs               = false;
     features.hasLogicOp                     = false;
-    features.hasHighResolution              = true;
+    features.hasVariableResolution          = true;
 
     /* Specify limits */
     limits.maxBufferSize                    = [device maxBufferLength];

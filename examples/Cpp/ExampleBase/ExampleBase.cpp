@@ -332,7 +332,7 @@ ExampleBase::ExampleBase(
     }
     context = renderer->CreateRenderContext(contextDesc, surface);
 
-    bool useHighRes = renderer->GetRenderingCaps().features.hasHighResolution;
+    bool useHighRes = renderer->GetRenderingCaps().features.hasVariableResolution;
     if (useHighRes)
     {
         LLGL::VideoModeDescriptor videoMode = context->GetVideoMode();

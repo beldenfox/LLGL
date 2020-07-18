@@ -558,7 +558,7 @@ struct RenderingFeatures
     /**
     \brief Specifies whether the video resolution can differ from the surface size.
     */
-    bool hasHighResolution             = false;
+    bool hasVariableResolution          = false;
 };
 
 /**

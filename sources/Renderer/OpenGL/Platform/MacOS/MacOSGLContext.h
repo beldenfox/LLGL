@@ -37,7 +37,7 @@ class MacOSGLContext : public GLContext
 
         bool SetSwapInterval(int interval) override;
         bool SwapBuffers() override;
-        void Resize(const Extent2D& resolution) override;
+        bool Resize(const Extent2D& resolution) override;
         std::uint32_t GetSamples() const override;
 
     private:

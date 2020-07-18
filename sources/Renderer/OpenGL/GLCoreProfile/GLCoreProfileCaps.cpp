@@ -207,7 +207,7 @@ static void GLGetSupportedFeatures(RenderingFeatures& features)
     features.hasRenderCondition             = true;
 
     #if __APPLE__
-    features.hasHighResolution              = true;
+    features.hasVariableResolution          = true;
     #endif
 }
 

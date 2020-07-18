@@ -67,17 +67,39 @@ bool MacOSGLContext::SwapBuffers()
     return true;
 }
 
-void MacOSGLContext::Resize(const Extent2D& resolution)
+bool MacOSGLContext::Resize(const Extent2D& resolution)
 {
-    #pragma clang diagnostic push
-    #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    if (resolution.width > wnd_.contentView.bounds.size.width)
-        wnd_.contentView.wantsBestResolutionOpenGLSurface = YES;
-    else
-        wnd_.contentView.wantsBestResolutionOpenGLSurface = NO;
-    #pragma clang diagnostic pop
+    // There are only two supported resolutions.
+    NSSize size = wnd_.contentView.bounds.size;
 
-    [ctx_ update];
+    Extent2D lowRes, highRes;
+    lowRes.width = size.width;
+    lowRes.height = size.height;
+    highRes.width = size.width * wnd_.backingScaleFactor;
+    highRes.height = size.height * wnd_.backingScaleFactor;
+
+    if (resolution == lowRes)
+    {
+        #pragma clang diagnostic push
+        #pragma clang diagnostic ignored "-Wdeprecated-declarations"
+        wnd_.contentView.wantsBestResolutionOpenGLSurface = NO;
+        #pragma clang diagnostic pop
+
+        [ctx_ update];
+        return true;
+    }
+    else if (resolution == highRes)
+    {
+        #pragma clang diagnostic push
+        #pragma clang diagnostic ignored "-Wdeprecated-declarations"
+        wnd_.contentView.wantsBestResolutionOpenGLSurface = YES;
+        #pragma clang diagnostic pop
+
+        [ctx_ update];
+        return true;
+    }
+
+    return false;
 }
 
 std::uint32_t MacOSGLContext::GetSamples() const

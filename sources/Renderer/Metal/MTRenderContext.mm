@@ -109,7 +109,12 @@ const RenderPass* MTRenderContext::GetRenderPass() const
 
 bool MTRenderContext::OnSetVideoMode(const VideoModeDescriptor& videoModeDesc)
 {
+    // The same scale factor is used on both axes. Let's validate that.
     CGFloat scale = videoModeDesc.resolution.width / view_.bounds.size.width;
+    uint32_t scaledHeight = view_.bounds.size.height * scale + 0.5;
+    if (scaledHeight != videoModeDesc.resolution.height)
+        return false;
+
     if (scale != view_.layer.contentsScale)
         view_.layer.contentsScale = scale;
 

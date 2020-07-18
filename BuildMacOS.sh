@@ -2,6 +2,7 @@
 
 SOURCE_DIR=$PWD
 OUTPUT_DIR="build"
+CMAKE=/Applications/CMake.app/Contents/bin/cmake
 
 # Ensure we are inside the repository folder
 if [ ! -f "CMakeLists.txt" ]; then
@@ -34,5 +35,5 @@ if [ ! -d "$GAUSSIAN_LIB_DIR" ]; then
 fi
 
 # Build into output directory
-cmake -DLLGL_BUILD_RENDERER_OPENGL=ON -DLLGL_BUILD_RENDERER_METAL=ON -DLLGL_BUILD_EXAMPLES=ON -DGaussLib_INCLUDE_DIR:STRING="$GAUSSIAN_LIB_DIR" -S "$SOURCE_DIR"
-cmake --build .
+"$CMAKE" -DLLGL_BUILD_RENDERER_OPENGL=ON -DLLGL_BUILD_RENDERER_METAL=ON -DLLGL_BUILD_EXAMPLES=ON -DGaussLib_INCLUDE_DIR:STRING="$GAUSSIAN_LIB_DIR" -S "$SOURCE_DIR"
+"$CMAKE" --build .
